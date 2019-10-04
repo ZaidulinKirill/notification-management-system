@@ -4,29 +4,38 @@ import telegramSender from './shared/telegramSender'
 
 export default ({ events }) => {
   return (value, oldValue) => Promise.all(events
-    .filter(event => event.condition(value, oldValue))
     .map(async event => {
-      event.context = await event.preSend ? event.preSend(value, oldValue) || {} : {}
+      event.context = event.preFilter 
+        ? await event.preFilter({ item: value,  oldItem: oldValue }) || {} 
+        : {}
+      
+      if (!event.condition({ item: value,  oldItem: oldValue, ...event.context })) {
+        return null
+      }
+
+      event.context = event.preSend ? 
+        await event.preSend({ item: value,  oldItem: oldValue, ...event.context }) 
+        : event.context
 
       return (event.channels || []).map(channel => {
         switch(channel.type) {
           case 'sms': {
             return smsSender(
-              channel.message({ item: value, ...event.context }), 
-              channel.recipients({ item: value, ...event.context })
+              channel.message({ item: value,  oldItem: oldValue, ...event.context }), 
+              channel.recipients({ item: value,  oldItem: oldValue, ...event.context })
             )
           }
           case 'email': {
             return emailSender({
-              subject: channel.subject({ item: value, ...event.context }), 
-              emails: channel.recipients({ item: value, ...event.context }),
-              html: channel.message({ item: value, ...event.context }),
+              subject: channel.subject({ item: value,  oldItem: oldValue, ...event.context }), 
+              emails: channel.recipients({ item: value,  oldItem: oldValue, ...event.context }),
+              html: channel.message({ item: value,  oldItem: oldValue, ...event.context }),
             })
           }
           case 'telegram': {
             return telegramSender({
-              ids: channel.recipients({ item: value, ...event.context }),
-              message: channel.message({ item: value, ...event.context }),
+              ids: channel.recipients({ item: value,  oldItem: oldValue, ...event.context }),
+              message: channel.message({ item: value,  oldItem: oldValue, ...event.context }),
             })
           }
           default: {
@@ -35,10 +44,6 @@ export default ({ events }) => {
         }
       })
     })
+    .filter(x => !!x)
   )
 }
-
-/**
- * 
- 
- */
