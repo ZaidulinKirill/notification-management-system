@@ -36,6 +36,8 @@ export default ({ events }) => {
             return telegramSender({
               ids: channel.recipients({ item: value,  oldItem: oldValue, ...event.context }),
               message: channel.message({ item: value,  oldItem: oldValue, ...event.context }),
+              photo: event.photo,
+              document: event.document,
             })
           }
           default: {
