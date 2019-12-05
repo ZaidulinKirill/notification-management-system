@@ -29,6 +29,7 @@ export default async (options = {}) => {
     ...options,
     from,
     to: email,
+    attachments: options.files || []
   });
 
   await Promise.all(

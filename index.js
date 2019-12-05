@@ -30,6 +30,9 @@ export default ({ events }) => {
               subject: channel.subject({ item: value,  oldItem: oldValue, ...event.context }), 
               emails: channel.recipients({ item: value,  oldItem: oldValue, ...event.context }),
               html: channel.message({ item: value,  oldItem: oldValue, ...event.context }),
+              files: channel.files 
+                ? channel.files({ item: value,  oldItem: oldValue, ...event.context })
+                : null
             })
           }
           case 'telegram': {
