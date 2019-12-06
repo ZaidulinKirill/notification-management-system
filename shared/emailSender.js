@@ -9,7 +9,7 @@ export default async (options = {}) => {
   const port = process.env.SMTP_PORT;
   const user = process.env.SMTP_USER;
   const password = process.env.SMTP_PASSWORD;
-  const from = process.env.SMTP_FROM;
+  const from = options.sender || process.env.SMTP_FROM;
 
   const transporter = nodemailer.createTransport({
     host,
