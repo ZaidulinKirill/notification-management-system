@@ -33,6 +33,12 @@ export default ({ events }) => {
               sender: channel.sender 
                 ? channel.sender({ item: value,  oldItem: oldValue, ...event.context })
                 : null,
+              login: channel.login 
+                ? channel.login({ item: value,  oldItem: oldValue, ...event.context })
+                : null,
+              password: channel.password 
+                ? channel.password({ item: value,  oldItem: oldValue, ...event.context })
+                : null,
               files: channel.files 
                 ? channel.files({ item: value,  oldItem: oldValue, ...event.context })
                 : null

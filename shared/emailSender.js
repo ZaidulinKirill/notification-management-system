@@ -7,8 +7,8 @@ export default async (options = {}) => {
 
   const host = process.env.SMTP_HOST;
   const port = process.env.SMTP_PORT;
-  const user = process.env.SMTP_USER;
-  const password = process.env.SMTP_PASSWORD;
+  const user = options.login || process.env.SMTP_USER;
+  const password = options.password || process.env.SMTP_PASSWORD;
   const from = options.sender || process.env.SMTP_FROM;
 
   const transporter = nodemailer.createTransport({
@@ -33,6 +33,8 @@ export default async (options = {}) => {
   });
 
   await Promise.all(
-    options.emails.map(email => transporter.sendMail(getOption(email)).catch(e => e)),
+    options.emails.map(email => transporter.sendMail(getOption(email)).catch(e => {
+      console.error(e)
+    })),
   );
 };
